@@ -1,0 +1,72 @@
+// Equations: https://itp.uni-frankfurt.de/~gros/StudentProjects/Projects_2020/projekt_schulz_kaefer/
+
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+RWTexture2D<float4> Result;
+
+// TO SET
+Texture2D<float4> prevState;
+
+float feedRate;
+float killRate;
+
+float diffusionU;
+float diffusionV;
+
+float deltaTime;
+
+uint resolution;
+//
+
+
+float4 GetNeighbour(int2 uv) {
+    uv = (uv + resolution) % resolution;
+    return prevState[uv];
+}
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    float prevU = prevState[id.xy].x;
+    float prevV = prevState[id.xy].y;
+
+    float laplacianU = (
+        GetNeighbour(id.xy + int2(0, 1))  * 0.2 +
+        GetNeighbour(id.xy + int2(0, -1)) * 0.2 +
+        GetNeighbour(id.xy + int2(1, 0))  * 0.2 +
+        GetNeighbour(id.xy + int2(-1, 0)) * 0.2 +
+        GetNeighbour(id.xy + int2(1, 1))  * 0.05 +
+        GetNeighbour(id.xy + int2(1, -1)) * 0.05 +
+        GetNeighbour(id.xy + int2(-1, 1)) * 0.05 +
+        GetNeighbour(id.xy + int2(-1, -1))* 0.05 -
+        prevU
+    ).x;
+
+    float laplacianV = (
+        GetNeighbour(id.xy + int2(0, 1))  * 0.2 +
+        GetNeighbour(id.xy + int2(0, -1)) * 0.2 +
+        GetNeighbour(id.xy + int2(1, 0))  * 0.2 +
+        GetNeighbour(id.xy + int2(-1, 0)) * 0.2 +
+        GetNeighbour(id.xy + int2(1, 1))  * 0.05 +
+        GetNeighbour(id.xy + int2(1, -1)) * 0.05 +
+        GetNeighbour(id.xy + int2(-1, 1)) * 0.05 +
+        GetNeighbour(id.xy + int2(-1, -1))* 0.05 -
+        prevV
+    ).y;
+
+    float reaction = prevU * (prevV * prevV);
+
+    float deltaU = (diffusionU * laplacianU) - reaction + (feedRate * (1.0 - prevU));
+    float deltaV = (diffusionV * laplacianV) + reaction - ((killRate + feedRate) * prevV);
+
+    float newU = clamp(prevU + deltaU * deltaTime, 0.0, 1.0);
+    float newV = clamp(prevV + deltaV * deltaTime, 0.0, 1.0);
+
+    newU = clamp(newU, 0.0, 1.0);
+    newV = clamp(newV, 0.0, 1.0);
+
+    Result[id.xy] = float4(newU, newV, 0.0, 1.0);
+}
