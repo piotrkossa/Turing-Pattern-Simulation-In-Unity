@@ -7,7 +7,7 @@
 
 
 \title{Equations used for this project}
-\author{github.com/piotrkossa}
+\author{\href{https://github.com/piotrkossa/Turing-Pattern-Simulation-In-Unity}{github/piotrkossa/Turing-Pattern-Simulation-In-Unity}}
 \date{}
 
 \begin{document}
@@ -19,9 +19,40 @@
 
 \vspace{10mm}
 
-\begin{center}
-Equations of the Gray-Scott Model
-\end{center}
+\section{The Project Goal}
+The goal of this project is to implement the Gray-Scott reaction-diffusion model in real time 
+in Unity. It leverages the parallel processing power of the GPU 
+using Compute Shaders to visualize complex Turing patterns 
+at an efficient refresh rate. This document provides a brief 
+description of the mathematical model and its implementation.
+
+
+
+\section{Overview}
+
+The simulation bases on the interaction between an \textbf{Activator ($u$)} and an \textbf{Inhibitor ($v$)}.
+Everything is driven by a single reaction, where the \textbf{Activator} is used up to create more of the \textbf{Inhibitor}.
+
+\[ 
+\scalebox{1.5}{$\displaystyle u + 2v \rightarrow 3v$}
+\]
+If that was all, the reaction would stop after a certain amount of time. This is why
+two processes are constantly active to keep it running:
+\begin{enumerate}
+\item A specified amount of the \textbf{Activator ($u$)} is continuously 
+added to the system, controlled by the \textbf{Feed Rate ($f$)}
+\item The \textbf{Inhibitor ($v$)} is slowly removed, controlled by the \textbf{Kill Rate ($k$)}
+\end{enumerate}
+Obtained patterns come from how the chemicals diffuse on the plane and not the reaction alone.
+Spreading out at different speeds causes creation of new unique patterns, even after minor change of \textbf{Diffusion Rates ($D_u, D_v$)}
+
+
+
+\section{Equations of the Gray-Scott Model}
+
+\vspace{10mm}
+
+
 \[ 
 \scalebox{1.2}{$\displaystyle \partial u/\partial t = (D_u * \nabla^2u) - (u * v^2) + (f * (1 - u))$}
 \]
@@ -32,17 +63,36 @@ Equations of the Gray-Scott Model
 
 \vspace{10mm}
 
+
 \begin{center}
-    \begin{tabular}{c c}
+    \begin{tabular}{c p{0.5\textwidth}}
         \textbf{Symbol} & \textbf{Description} \\
         $u$ & Concentration of Activator \\
         $v$ & Concentration of Inhibitor \\
         $D_u, D_v$ & Diffusion Rates of Chemicals \\
         $\nabla^2u, \nabla^2v$ & Laplacian - Spatial Diffusion \\
-        $f$ & Feed rate of $u$ \\
-        $k$ & Kill rate of $v$ \\
+        $f$ & The Feed Rate, represents a constant supply of substance $u$ \\
+        $k$ & The Kill Rate, represents the rate of removal of substance $v$ \\
         $\partial u/\partial t, \partial v/\partial t$ & Time Derivatives of Concentrations \\
     \end{tabular}
 \end{center}
+
+\vspace{10mm}
+
+
+\section{The Laplacian}
+\vspace{10mm}
+
+The Laplacian operator ($\nabla^2$) is calculated using a 3x3 convolution kernel:
+\[
+\begin{bmatrix}
+    0.05 & 0.20 & 0.05 \\
+    0.20 & -1.0 & 0.20 \\
+    0.05 & 0.20 & 0.05
+\end{bmatrix}
+\]
+For each pixel, the values of its eight neighbors and itself are multiplied by the corresponding weights in the kernel, and the results are summed up to produce the final Laplacian value.
+
+
 
 \end{document}
