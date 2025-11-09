@@ -50,7 +50,7 @@ Shader "TuringSimulation/VisualisationShader"
                 //float v = tex2D(_MainTex, i.uv).g;
 
 
-                float4 color = float4(u, u, u, 1);
+                float4 color = float4(1 - u, 1- u, 1 - u, 1);
 
                 return color;
             }
