@@ -1,6 +1,8 @@
 // Equations: https://itp.uni-frankfurt.de/~gros/StudentProjects/Projects_2020/projekt_schulz_kaefer/
 
 // Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel Initialize
+#pragma kernel AddSeed
 #pragma kernel CSMain
 
 // Create a RenderTexture with enableRandomWrite flag and set it
@@ -18,8 +20,27 @@ float diffusionV;
 
 float deltaTime;
 
-uint resolution;
+int resolution;
 //
+
+
+
+[numthreads(8,8,1)]
+void Initialize (uint3 id : SV_DispatchThreadID)
+{
+    Result[id.xy] = float4(1.0, 0.0, 0.0, 1.0); 
+}
+
+[numthreads(8,8,1)]
+void AddSeed (uint3 id : SV_DispatchThreadID)
+{
+    int2 center = int2(resolution/2, resolution/2);
+    int seedSize = 10;
+    if (abs(id.x - center.x) < seedSize && abs(id.y - center.y) < seedSize)
+    {
+        Result[id.xy] = float4(0.0, 1.0, 0.0, 1.0);
+    }
+}
 
 
 float4 GetNeighbour(int2 uv) {
@@ -34,26 +55,26 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float prevV = prevState[id.xy].y;
 
     float laplacianU = (
-        GetNeighbour(id.xy + int2(0, 1))  * 0.2 +
+        GetNeighbour(id.xy + int2(0, 1)) * 0.2 +
         GetNeighbour(id.xy + int2(0, -1)) * 0.2 +
-        GetNeighbour(id.xy + int2(1, 0))  * 0.2 +
+        GetNeighbour(id.xy + int2(1, 0)) * 0.2 +
         GetNeighbour(id.xy + int2(-1, 0)) * 0.2 +
-        GetNeighbour(id.xy + int2(1, 1))  * 0.05 +
+        GetNeighbour(id.xy + int2(1, 1)) * 0.05 +
         GetNeighbour(id.xy + int2(1, -1)) * 0.05 +
         GetNeighbour(id.xy + int2(-1, 1)) * 0.05 +
-        GetNeighbour(id.xy + int2(-1, -1))* 0.05 -
+        GetNeighbour(id.xy + int2(-1, -1)) * 0.05 -
         prevU
     ).x;
 
     float laplacianV = (
-        GetNeighbour(id.xy + int2(0, 1))  * 0.2 +
+        GetNeighbour(id.xy + int2(0, 1)) * 0.2 +
         GetNeighbour(id.xy + int2(0, -1)) * 0.2 +
-        GetNeighbour(id.xy + int2(1, 0))  * 0.2 +
+        GetNeighbour(id.xy + int2(1, 0)) * 0.2 +
         GetNeighbour(id.xy + int2(-1, 0)) * 0.2 +
-        GetNeighbour(id.xy + int2(1, 1))  * 0.05 +
+        GetNeighbour(id.xy + int2(1, 1)) * 0.05 +
         GetNeighbour(id.xy + int2(1, -1)) * 0.05 +
         GetNeighbour(id.xy + int2(-1, 1)) * 0.05 +
-        GetNeighbour(id.xy + int2(-1, -1))* 0.05 -
+        GetNeighbour(id.xy + int2(-1, -1)) * 0.05 -
         prevV
     ).y;
 
