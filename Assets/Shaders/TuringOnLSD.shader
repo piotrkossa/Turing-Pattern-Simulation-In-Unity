@@ -1,8 +1,10 @@
-Shader "TuringSimulation/VisualisationShader"
+Shader "TuringSimulation/LSDShader"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+        _Frequency ("Color Frequency", Range(1, 50)) = 1.0
+        _ColorSpeed ("Color Speed", Range(0, 5)) = 1.0
     }
     SubShader
     {
@@ -19,6 +21,10 @@ Shader "TuringSimulation/VisualisationShader"
             #include "UnityCG.cginc"
 
             sampler2D _MainTex; 
+
+            float _Frequency;
+            float _ColorSpeed;
+
 
             struct appdata
             {
@@ -44,9 +50,9 @@ Shader "TuringSimulation/VisualisationShader"
             }
 
             float4 getLSDColor(float u, float v) {
-                float r = sin(u + _Time.y) * 0.5 + 0.5;
-                float g = sin(v + _Time.y + 2.0) * 0.5 + 0.5;
-                float b = sin((u-v) + _Time.y + 4.0) * 0.5 + 0.5;
+                float r = sin(u * _Frequency + _Time.y * _ColorSpeed) * 0.5 + 0.5;
+                float g = sin(v * _Frequency + _Time.y * _ColorSpeed + 2.0) * 0.5 + 0.5;
+                float b = sin((u-v) * _Frequency + _Time.y * _ColorSpeed + 4.0) * 0.5 + 0.5;
 
                 return float4(r, g, b, 1.0);
             }
