@@ -4,6 +4,19 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstset{
+  language=C,
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{gray!10},
+  frame=single,
+  morekeywords={float, float4, float2, int, int2, uint, uint3, RWTexture2D, Texture2D, sampler2D, clamp, abs, TEXCOORD, SV_Target},
+  keywordstyle=\color{blue},
+  stringstyle=\color{purple}
+}
+
 
 
 \title{Equations used for this project}
@@ -17,16 +30,12 @@
 \href{https://itp.uni-frankfurt.de/~gros/StudentProjects/Projects_2020/projekt_schulz_kaefer/}{Used Source}
 \end{center}
 
-\vspace{10mm}
-
 \section{The Project Goal}
 The goal of this project is to implement the Gray-Scott reaction-diffusion model in real time 
 in Unity. It leverages the parallel processing power of the GPU 
 using Compute Shaders to visualize complex Turing patterns 
 at an efficient refresh rate. This document provides a brief 
 description of the mathematical model and its implementation.
-
-
 
 \section{Overview}
 
@@ -50,7 +59,6 @@ Spreading out at different speeds causes creation of new unique patterns, even a
 
 \section{Equations of the Gray-Scott Model}
 
-\vspace{10mm}
 
 
 \[ 
@@ -61,7 +69,6 @@ Spreading out at different speeds causes creation of new unique patterns, even a
 \]
 
 
-\vspace{10mm}
 
 
 \begin{center}
@@ -77,12 +84,9 @@ Spreading out at different speeds causes creation of new unique patterns, even a
     \end{tabular}
 \end{center}
 
-\vspace{10mm}
 
 
 \section{The Laplacian}
-\vspace{10mm}
-
 The Laplacian operator ($\nabla^2$) is calculated using a 3x3 convolution kernel:
 \[
 \begin{bmatrix}
@@ -93,6 +97,7 @@ The Laplacian operator ($\nabla^2$) is calculated using a 3x3 convolution kernel
 \]
 For each pixel, the values of its eight neighbors and itself are multiplied by the corresponding weights in the kernel, and the results are summed up to produce the final Laplacian value.
 
+\section{Code Implementations}
 
 
 \end{document}
