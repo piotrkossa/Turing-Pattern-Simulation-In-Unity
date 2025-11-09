@@ -22,6 +22,7 @@ public class SimulationScript : MonoBehaviour
     [Range(0f, 2f)] public float diffusionA = 1.0f;
     [Range(0f, 2f)] public float diffusionB = 0.5f;
     [Range(0f, 5f)] public float timeStep = 1.0f;
+    [Range(1, 50)] public int iterationsPerFrame = 1;
 
 
     void Start()
@@ -54,20 +55,23 @@ public class SimulationScript : MonoBehaviour
 
     private void FixedUpdate()
     {
-        computeShader.SetFloat("feedRate", feedRate);
-        computeShader.SetFloat("killRate", killRate);
-        computeShader.SetFloat("diffusionU", diffusionA);
-        computeShader.SetFloat("diffusionV", diffusionB);
-        computeShader.SetFloat("deltaTime", timeStep);
+        for (int i = 0; i < iterationsPerFrame; i++)
+        {
+            computeShader.SetFloat("feedRate", feedRate);
+            computeShader.SetFloat("killRate", killRate);
+            computeShader.SetFloat("diffusionU", diffusionA);
+            computeShader.SetFloat("diffusionV", diffusionB);
+            computeShader.SetFloat("deltaTime", timeStep);
 
-        computeShader.SetTexture(mainKernel, "prevState", buffers[currentBuffer]);
-        computeShader.SetTexture(mainKernel, "Result", buffers[1 - currentBuffer]);
+            computeShader.SetTexture(mainKernel, "prevState", buffers[currentBuffer]);
+            computeShader.SetTexture(mainKernel, "Result", buffers[1 - currentBuffer]);
 
-        computeShader.Dispatch(mainKernel, resolution / 8, resolution / 8, 1);
+            computeShader.Dispatch(mainKernel, resolution / 8, resolution / 8, 1);
 
-        currentBuffer = 1 - currentBuffer;
+            currentBuffer = 1 - currentBuffer;
 
-        rawImage.texture = buffers[currentBuffer];
+            rawImage.texture = buffers[currentBuffer];
+        }
     }
 
     private void OnDestroy()

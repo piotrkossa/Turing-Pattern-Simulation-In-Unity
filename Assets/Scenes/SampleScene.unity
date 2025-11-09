@@ -434,6 +434,7 @@ MonoBehaviour:
   diffusionA: 1
   diffusionB: 0.5
   timeStep: 1
+  iterationsPerFrame: 10
 --- !u!1 &1413046997
 GameObject:
   m_ObjectHideFlags: 0
