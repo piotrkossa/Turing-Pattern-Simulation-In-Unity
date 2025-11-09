@@ -22,7 +22,7 @@ public class SimulationScript : MonoBehaviour
     [Range(0f, 2f)] public float diffusionA = 1.0f;
     [Range(0f, 2f)] public float diffusionB = 0.5f;
     [Range(0f, 5f)] public float timeStep = 1.0f;
-    [Range(1, 50)] public int iterationsPerFrame = 1;
+    [Range(0, 50)] public int iterationsPerFrame = 0;
 
 
     void Start()
