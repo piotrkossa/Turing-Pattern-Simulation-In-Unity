@@ -1,0 +1,48 @@
+\documentclass[12pt]{article}
+\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+
+
+\title{Equations used for this project}
+\author{github.com/piotrkossa}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\href{https://itp.uni-frankfurt.de/~gros/StudentProjects/Projects_2020/projekt_schulz_kaefer/}{Used Source}
+\end{center}
+
+\vspace{10mm}
+
+\begin{center}
+Equations of the Gray-Scott Model
+\end{center}
+\[ 
+\scalebox{1.2}{$\displaystyle \partial u/\partial t = (D_u * \nabla^2u) - (u * v^2) + (f * (1 - u))$}
+\]
+\[ 
+\scalebox{1.2}{$\displaystyle \partial v/\partial t = (D_v * \nabla^2v) + (u * v^2) - ((k + f) * v)$}
+\]
+
+
+\vspace{10mm}
+
+\begin{center}
+    \begin{tabular}{c c}
+        \textbf{Symbol} & \textbf{Description} \\
+        $u$ & Concentration of Activator \\
+        $v$ & Concentration of Inhibitor \\
+        $D_u, D_v$ & Diffusion Rates of Chemicals \\
+        $\nabla^2u, \nabla^2v$ & Laplacian - Spatial Diffusion \\
+        $f$ & Feed rate of $u$ \\
+        $k$ & Kill rate of $v$ \\
+        $\partial u/\partial t, \partial v/\partial t$ & Time Derivatives of Concentrations \\
+    \end{tabular}
+\end{center}
+
+\end{document}

@@ -67,5 +67,24 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "Turing-Pattern-Simulation-In-Unity.slnx"
+    "dotnet.defaultSolution": "Turing-Pattern-Simulation-In-Unity.slnx",
+
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "pdflatex ➜ view",
+            "tools": ["pdflatex"]
+        }
+    ],
+    "latex-workshop.latex.tools": [
+        {
+            "name": "pdflatex",
+            "command": "pdflatex",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "%DOC%"
+            ]
+        }
+    ],
+    "latex-workshop.view.pdf.viewer": "tab"
 }
