@@ -15,15 +15,34 @@ public class SimulationScript : MonoBehaviour
     private int initKernel;
     private int seedKernel;
 
-    [Header("Simulation Parameters")]
-    public int resolution = 512;
-    [Range(0f, 0.1f)] public float feedRate = 0.0545f;
-    [Range(0f, 0.1f)] public float killRate = 0.062f;
-    [Range(0f, 2f)] public float diffusionA = 1.0f;
-    [Range(0f, 2f)] public float diffusionB = 0.5f;
-    private float timeStep = 1.0f; // private for now
-    [Range(0, 300)] public int iterationsPerFrame = 0;
+    private const int resolution = 512;
 
+    // variables to update each frame
+    private float feedRate;
+    private float killRate;
+    private float diffusionA = 1.0f;
+    private float diffusionB = 0.5f;
+    private int iterationsPerFrame = 0;
+
+
+    [SerializeField] private Slider _feedRateSlider;
+    [SerializeField] private Slider _killRateSlider;
+    [SerializeField] private Slider _diffusionASlider;
+    [SerializeField] private Slider _diffusionBSlider;
+    [SerializeField] private Slider _speedSlider;
+
+
+
+    private float timeStep = 1.0f; // private for now
+
+    private void UpdateSettings()
+    {
+        feedRate = _feedRateSlider.SliderValue;
+        killRate = _killRateSlider.SliderValue;
+        diffusionA = _diffusionASlider.SliderValue;
+        diffusionB = _diffusionBSlider.SliderValue;
+        iterationsPerFrame = (int)_speedSlider.SliderValue;
+    }
 
     void Start()
     {
@@ -55,6 +74,8 @@ public class SimulationScript : MonoBehaviour
 
     private void FixedUpdate()
     {
+        UpdateSettings();
+
         for (int i = 0; i < iterationsPerFrame; i++)
         {
             computeShader.SetFloat("feedRate", feedRate);
