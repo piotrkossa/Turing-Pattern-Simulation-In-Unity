@@ -21,8 +21,8 @@ public class SimulationScript : MonoBehaviour
     [Range(0f, 0.1f)] public float killRate = 0.062f;
     [Range(0f, 2f)] public float diffusionA = 1.0f;
     [Range(0f, 2f)] public float diffusionB = 0.5f;
-    [Range(0f, 5f)] public float timeStep = 1.0f;
-    [Range(0, 50)] public int iterationsPerFrame = 0;
+    private float timeStep = 1.0f; // private for now
+    [Range(0, 300)] public int iterationsPerFrame = 0;
 
 
     void Start()
