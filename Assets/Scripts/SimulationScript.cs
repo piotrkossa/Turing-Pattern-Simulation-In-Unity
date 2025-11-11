@@ -32,6 +32,19 @@ public class SimulationScript : MonoBehaviour
     [SerializeField] private Slider _speedSlider;
 
 
+    public void Reset()
+    {
+        computeShader.SetTexture(initKernel, "Result", buffers[0]);
+        computeShader.Dispatch(initKernel, resolution / 8, resolution / 8, 1);
+        
+        computeShader.SetTexture(seedKernel, "Result", buffers[0]);
+        computeShader.Dispatch(seedKernel, resolution / 8, resolution / 8, 1);
+
+        currentBuffer = 0;
+
+        rawImage.texture = buffers[currentBuffer];
+    }
+
 
     private float timeStep = 1.0f; // private for now
 
@@ -44,7 +57,7 @@ public class SimulationScript : MonoBehaviour
         iterationsPerFrame = (int)_speedSlider.SliderValue;
     }
 
-    void Start()
+    private void Start()
     {
         buffers = new RenderTexture[2];
         for (int i = 0; i < 2; i++)
@@ -59,16 +72,8 @@ public class SimulationScript : MonoBehaviour
         seedKernel = computeShader.FindKernel("AddSeed");
         
         computeShader.SetInt("resolution", resolution);
-        
-        computeShader.SetTexture(initKernel, "Result", buffers[0]);
-        computeShader.Dispatch(initKernel, resolution / 8, resolution / 8, 1);
-        
-        computeShader.SetTexture(seedKernel, "Result", buffers[0]);
-        computeShader.Dispatch(seedKernel, resolution / 8, resolution / 8, 1);
 
-        currentBuffer = 0;
-
-        rawImage.texture = buffers[currentBuffer];
+        Reset();
     }
 
 
