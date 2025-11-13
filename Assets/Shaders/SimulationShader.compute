@@ -80,8 +80,14 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     float reaction = prevU * (prevV * prevV);
 
-    float deltaU = (diffusionU * laplacianU) - reaction + (feedRate * (1.0 - prevU));
-    float deltaV = (diffusionV * laplacianV) + reaction - ((killRate + feedRate) * prevV);
+    float deltaU = (diffusionU * laplacianU) 
+        - reaction 
+        + (feedRate * (1.0 - prevU));
+
+    float deltaV = (diffusionV * laplacianV) 
+        + reaction 
+        - ((killRate + feedRate) 
+        * prevV);
 
     float newU = clamp(prevU + deltaU * deltaTime, 0.0, 1.0);
     float newV = clamp(prevV + deltaV * deltaTime, 0.0, 1.0);
