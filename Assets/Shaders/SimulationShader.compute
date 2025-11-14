@@ -4,6 +4,7 @@
 #pragma kernel Initialize
 #pragma kernel AddSeed
 #pragma kernel CSMain
+#pragma kernel Draw
 
 // Create a RenderTexture with enableRandomWrite flag and set it
 // with cs.SetTexture
@@ -23,14 +24,25 @@ float deltaTime;
 uint resolution;
 
 bool stopOnWalls;
+
+uint pointToDrawX;
+uint pointToDrawY;
+
 //
-
-
 
 [numthreads(8,8,1)]
 void Initialize (uint3 id : SV_DispatchThreadID)
 {
     Result[id.xy] = float4(1.0, 0.0, 0.0, 1.0); 
+}
+
+[numthreads(8,8,1)]
+void Draw(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x - pointToDrawX < 3 && id.y - pointToDrawY < 3)
+    {
+        Result[id.xy] = float4(0.0, 1.0, 0.0, 1.0);
+    }
 }
 
 [numthreads(8,8,1)]

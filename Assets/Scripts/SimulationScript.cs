@@ -3,6 +3,8 @@ using UnityEngine.UI;
 
 public class SimulationScript : MonoBehaviour
 {
+    private RectTransform thisTransform;
+
     [Header("Setup")]
     public ComputeShader computeShader;
 
@@ -14,6 +16,7 @@ public class SimulationScript : MonoBehaviour
     private int mainKernel;
     private int initKernel;
     private int seedKernel;
+    private int drawingKernel;
 
     private const int resolution = 512;
 
@@ -24,6 +27,7 @@ public class SimulationScript : MonoBehaviour
     private float diffusionB = 0.5f;
     private int iterationsPerFrame = 0;
     private bool stopOnWalls = false;
+    private bool drawingMode = false;
 
 
     [SerializeField] private Slider _feedRateSlider;
@@ -51,6 +55,11 @@ public class SimulationScript : MonoBehaviour
         stopOnWalls = value;
     }
 
+    public void SetDrawingMode(bool value)
+    {
+        drawingMode = value;
+    }
+
 
     private float timeStep = 1.0f; // private for now
 
@@ -65,6 +74,8 @@ public class SimulationScript : MonoBehaviour
 
     private void Start()
     {
+        thisTransform = this.GetComponent<RectTransform>();
+
         buffers = new RenderTexture[2];
         for (int i = 0; i < 2; i++)
         {
@@ -76,6 +87,7 @@ public class SimulationScript : MonoBehaviour
         mainKernel = computeShader.FindKernel("CSMain");
         initKernel = computeShader.FindKernel("Initialize");
         seedKernel = computeShader.FindKernel("AddSeed");
+        drawingKernel = computeShader.FindKernel("Draw");
         
         computeShader.SetInt("resolution", resolution);
 
@@ -87,23 +99,49 @@ public class SimulationScript : MonoBehaviour
     {
         UpdateSettings();
 
+        computeShader.SetFloat("feedRate", feedRate);
+        computeShader.SetFloat("killRate", killRate);
+        computeShader.SetFloat("diffusionU", diffusionA);
+        computeShader.SetFloat("diffusionV", diffusionB);
+        computeShader.SetFloat("deltaTime", timeStep);
+        computeShader.SetBool("stopOnWalls", stopOnWalls);
+
+
+        if (drawingMode)
+            Draw();
+
         for (int i = 0; i < iterationsPerFrame; i++)
         {
-            computeShader.SetFloat("feedRate", feedRate);
-            computeShader.SetFloat("killRate", killRate);
-            computeShader.SetFloat("diffusionU", diffusionA);
-            computeShader.SetFloat("diffusionV", diffusionB);
-            computeShader.SetFloat("deltaTime", timeStep);
-            computeShader.SetBool("stopOnWalls", stopOnWalls);
-
             computeShader.SetTexture(mainKernel, "prevState", buffers[currentBuffer]);
             computeShader.SetTexture(mainKernel, "Result", buffers[1 - currentBuffer]);
 
             computeShader.Dispatch(mainKernel, resolution / 8, resolution / 8, 1);
 
             currentBuffer = 1 - currentBuffer;
+        }
 
-            rawImage.texture = buffers[currentBuffer];
+        
+        rawImage.texture = buffers[currentBuffer];
+    }
+
+    private void Draw()
+    {
+        if (!Input.GetMouseButton(0)) return;
+
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(thisTransform, Input.mousePosition, null, out var localPoint))
+        {
+            if (!thisTransform.rect.Contains(localPoint)) return;
+
+            Vector2 uv = new Vector2(
+                Mathf.InverseLerp(thisTransform.rect.xMin, thisTransform.rect.xMax, localPoint.x),
+                Mathf.InverseLerp(thisTransform.rect.yMin, thisTransform.rect.yMax, localPoint.y)
+            );
+
+            computeShader.SetInt("pointToDrawX", Mathf.FloorToInt(uv.x * resolution));
+            computeShader.SetInt("pointToDrawY", Mathf.FloorToInt(uv.y * resolution));
+
+            computeShader.SetTexture(drawingKernel, "Result", buffers[currentBuffer]);
+            computeShader.Dispatch(drawingKernel, resolution / 8, resolution / 8, 1);
         }
     }
 
