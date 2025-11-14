@@ -97,7 +97,81 @@ The Laplacian operator ($\nabla^2$) is calculated using a 3x3 convolution kernel
 \]
 For each pixel, the values of its eight neighbors and itself are multiplied by the corresponding weights in the kernel, and the results are summed up to produce the final Laplacian value.
 
-\section{Code Implementations}
+\newpage
 
+\section{Code Implementations}
+The following code snippets demonstrate how the Gray-Scott model equations are implemented in a custom Unity's Compute Shader.
+
+\begin{enumerate}
+\item \textbf{The Laplacian calculation:}
+
+\begin{lstlisting}
+float laplacianU = (
+    GetNeighbour(id.xy + int2(0, 1)) * 0.2 +
+    GetNeighbour(id.xy + int2(0, -1)) * 0.2 +
+    GetNeighbour(id.xy + int2(1, 0)) * 0.2 +
+    GetNeighbour(id.xy + int2(-1, 0)) * 0.2 +
+    GetNeighbour(id.xy + int2(1, 1)) * 0.05 +
+    GetNeighbour(id.xy + int2(1, -1)) * 0.05 +
+    GetNeighbour(id.xy + int2(-1, 1)) * 0.05 +
+    GetNeighbour(id.xy + int2(-1, -1)) * 0.05 -
+    prevU
+).x;
+
+float laplacianV = (
+    GetNeighbour(id.xy + int2(0, 1)) * 0.2 +
+    GetNeighbour(id.xy + int2(0, -1)) * 0.2 +
+    GetNeighbour(id.xy + int2(1, 0)) * 0.2 +
+    GetNeighbour(id.xy + int2(-1, 0)) * 0.2 +
+    GetNeighbour(id.xy + int2(1, 1)) * 0.05 +
+    GetNeighbour(id.xy + int2(1, -1)) * 0.05 +
+    GetNeighbour(id.xy + int2(-1, 1)) * 0.05 +
+    GetNeighbour(id.xy + int2(-1, -1)) * 0.05 -
+    prevV
+).y;
+\end{lstlisting}
+We take each pixel on the texture and calculate the Laplacian
+for both chemicals using the convolution kernel from 
+The Laplacian section and its neighboring pixels.
+
+\newpage
+
+\item \textbf{The Gray-Scott equations implementation:}
+\begin{lstlisting}
+float prevU = prevState[id.xy].x;
+float prevV = prevState[id.xy].y;
+
+float reaction = prevU * (prevV * prevV);
+
+float deltaU = (diffusionU * laplacianU) 
+    - reaction 
+    + (feedRate * (1.0 - prevU));
+
+float deltaV = (diffusionV * laplacianV)
+    + reaction 
+    - ((killRate + feedRate) * prevV);
+
+float newU = clamp(
+    prevU + deltaU * deltaTime, 
+    0.0, 
+    1.0);
+
+float newV = clamp(
+    prevV + deltaV * deltaTime, 
+    0.0, 
+    1.0);
+
+newU = clamp(newU, 0.0, 1.0);
+newV = clamp(newV, 0.0, 1.0);
+
+Result[id.xy] = float4(newU, newV, 0.0, 1.0);
+\end{lstlisting}
+This code calculates the changes in concentrations
+of both chemicals using the mentioned equations. 
+It updates the concentrations
+based on diffusion, reaction, feed and kill rates, 
+ensuring the values remain within 
+valid range using clamping function.
+\end{enumerate}
 
 \end{document}
