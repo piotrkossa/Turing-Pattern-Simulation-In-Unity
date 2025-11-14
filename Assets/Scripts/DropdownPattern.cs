@@ -41,17 +41,25 @@ public class DropdownPattern : MonoBehaviour
 
     private void SetPlaceHolder()
     {
-        _dropdown.SetValueWithoutNotify(-1);
+        if (!ignoreSliders)
+            _dropdown.SetValueWithoutNotify(-1);
     }
+
+    bool ignoreSliders = false;
 
     private void ValueChanged()
     {
+        ignoreSliders = true;
+        
         int value = _dropdown.value;
+
         PatternData pattern = patterns[value];
 
         _feedRateSlider.value = pattern.FeedRate;
         _killRateSlider.value = pattern.KillRate;
         _diffusionASlider.value = pattern.DiffusionU;
         _diffusionBSlider.value = pattern.DiffusionV;
+
+        ignoreSliders = false;
     }
 }

@@ -21,6 +21,8 @@ float diffusionV;
 float deltaTime;
 
 uint resolution;
+
+bool stopOnWalls;
 //
 
 
@@ -44,7 +46,13 @@ void AddSeed (uint3 id : SV_DispatchThreadID)
 
 
 float4 GetNeighbour(int2 uv) {
-    uv = (uv + resolution) % resolution;
+    if (stopOnWalls) {
+        uv.x = clamp(uv.x, 0, resolution);
+        uv.y = clamp(uv.y, 0, resolution);
+    }
+    else {
+        uv = (uv + resolution) % resolution;
+    }
     return prevState[uv];
 }
 

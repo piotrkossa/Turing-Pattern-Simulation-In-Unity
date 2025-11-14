@@ -23,6 +23,7 @@ public class SimulationScript : MonoBehaviour
     private float diffusionA = 1.0f;
     private float diffusionB = 0.5f;
     private int iterationsPerFrame = 0;
+    private bool stopOnWalls = false;
 
 
     [SerializeField] private Slider _feedRateSlider;
@@ -43,6 +44,11 @@ public class SimulationScript : MonoBehaviour
         currentBuffer = 0;
 
         rawImage.texture = buffers[currentBuffer];
+    }
+
+    public void StopOnWalls(bool value)
+    {
+        stopOnWalls = value;
     }
 
 
@@ -88,6 +94,7 @@ public class SimulationScript : MonoBehaviour
             computeShader.SetFloat("diffusionU", diffusionA);
             computeShader.SetFloat("diffusionV", diffusionB);
             computeShader.SetFloat("deltaTime", timeStep);
+            computeShader.SetBool("stopOnWalls", stopOnWalls);
 
             computeShader.SetTexture(mainKernel, "prevState", buffers[currentBuffer]);
             computeShader.SetTexture(mainKernel, "Result", buffers[1 - currentBuffer]);
