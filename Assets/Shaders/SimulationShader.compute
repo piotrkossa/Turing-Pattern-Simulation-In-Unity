@@ -20,7 +20,7 @@ float diffusionV;
 
 float deltaTime;
 
-int resolution;
+uint resolution;
 //
 
 
@@ -34,9 +34,9 @@ void Initialize (uint3 id : SV_DispatchThreadID)
 [numthreads(8,8,1)]
 void AddSeed (uint3 id : SV_DispatchThreadID)
 {
-    int2 center = int2(resolution/2, resolution/2);
-    int seedSize = 10;
-    if (abs(id.x - center.x) < seedSize && abs(id.y - center.y) < seedSize)
+    uint2 center = uint2(resolution/2, resolution/2);
+    uint seedSize = 10;
+    if (id.x - center.x < seedSize && id.y - center.y < seedSize)
     {
         Result[id.xy] = float4(0.0, 1.0, 0.0, 1.0);
     }
