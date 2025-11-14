@@ -63,26 +63,26 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float prevV = prevState[id.xy].y;
 
     float laplacianU = (
-        GetNeighbour(id.xy + int2(0, 1)) * 0.2 +
-        GetNeighbour(id.xy + int2(0, -1)) * 0.2 +
-        GetNeighbour(id.xy + int2(1, 0)) * 0.2 +
-        GetNeighbour(id.xy + int2(-1, 0)) * 0.2 +
-        GetNeighbour(id.xy + int2(1, 1)) * 0.05 +
-        GetNeighbour(id.xy + int2(1, -1)) * 0.05 +
-        GetNeighbour(id.xy + int2(-1, 1)) * 0.05 +
-        GetNeighbour(id.xy + int2(-1, -1)) * 0.05 -
+        GetNeighbour((int2)id.xy + int2(0, 1)) * 0.2 +
+        GetNeighbour((int2)id.xy + int2(0, -1)) * 0.2 +
+        GetNeighbour((int2)id.xy + int2(1, 0)) * 0.2 +
+        GetNeighbour((int2)id.xy + int2(-1, 0)) * 0.2 +
+        GetNeighbour((int2)id.xy + int2(1, 1)) * 0.05 +
+        GetNeighbour((int2)id.xy + int2(1, -1)) * 0.05 +
+        GetNeighbour((int2)id.xy + int2(-1, 1)) * 0.05 +
+        GetNeighbour((int2)id.xy + int2(-1, -1)) * 0.05 -
         prevU
     ).x;
 
     float laplacianV = (
-        GetNeighbour(id.xy + int2(0, 1)) * 0.2 +
-        GetNeighbour(id.xy + int2(0, -1)) * 0.2 +
-        GetNeighbour(id.xy + int2(1, 0)) * 0.2 +
-        GetNeighbour(id.xy + int2(-1, 0)) * 0.2 +
-        GetNeighbour(id.xy + int2(1, 1)) * 0.05 +
-        GetNeighbour(id.xy + int2(1, -1)) * 0.05 +
-        GetNeighbour(id.xy + int2(-1, 1)) * 0.05 +
-        GetNeighbour(id.xy + int2(-1, -1)) * 0.05 -
+        GetNeighbour((int2)id.xy + int2(0, 1)) * 0.2 +
+        GetNeighbour((int2)id.xy + int2(0, -1)) * 0.2 +
+        GetNeighbour((int2)id.xy + int2(1, 0)) * 0.2 +
+        GetNeighbour((int2)id.xy + int2(-1, 0)) * 0.2 +
+        GetNeighbour((int2)id.xy + int2(1, 1)) * 0.05 +
+        GetNeighbour((int2)id.xy + int2(1, -1)) * 0.05 +
+        GetNeighbour((int2)id.xy + int2(-1, 1)) * 0.05 +
+        GetNeighbour((int2)id.xy + int2(-1, -1)) * 0.05 -
         prevV
     ).y;
 
