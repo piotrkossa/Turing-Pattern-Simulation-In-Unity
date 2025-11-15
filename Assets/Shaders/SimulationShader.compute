@@ -25,10 +25,18 @@ uint resolution;
 
 bool stopOnWalls;
 
-uint pointToDrawX;
-uint pointToDrawY;
+float2 lastDrawPosition;
+float2 newDrawPosition;
 
 //
+
+void DrawSquare(uint2 p, uint diameter, uint2 id)
+{
+    if (id.x - p.x < diameter && id.y - p.y < diameter)
+    {
+        Result[id.xy] = float4(0.0, 1.0, 0.0, 1.0);
+    }
+}
 
 [numthreads(8,8,1)]
 void Initialize (uint3 id : SV_DispatchThreadID)
@@ -36,24 +44,34 @@ void Initialize (uint3 id : SV_DispatchThreadID)
     Result[id.xy] = float4(1.0, 0.0, 0.0, 1.0); 
 }
 
+
 [numthreads(8,8,1)]
 void Draw(uint3 id : SV_DispatchThreadID)
 {
-    if (id.x - pointToDrawX < 3 && id.y - pointToDrawY < 3)
-    {
+    float lineWidth = 3.0;
+
+    float2 p = id.xy;
+
+    float a = lastDrawPosition.y - newDrawPosition.y;
+    float b = newDrawPosition.x - lastDrawPosition.x;
+    float c = lastDrawPosition.x * newDrawPosition.y 
+            - newDrawPosition.x * lastDrawPosition.y;
+
+    float d = abs(a * id.x + b * id.y + c)/(sqrt(a*a + b*b));
+
+    if (d <= lineWidth) {
         Result[id.xy] = float4(0.0, 1.0, 0.0, 1.0);
     }
 }
+
 
 [numthreads(8,8,1)]
 void AddSeed (uint3 id : SV_DispatchThreadID)
 {
     uint2 center = uint2(resolution/2, resolution/2);
     uint seedSize = 10;
-    if (id.x - center.x < seedSize && id.y - center.y < seedSize)
-    {
-        Result[id.xy] = float4(0.0, 1.0, 0.0, 1.0);
-    }
+
+    DrawSquare(center, seedSize, id.xy);
 }
 
 

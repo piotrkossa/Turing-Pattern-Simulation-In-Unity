@@ -124,9 +124,14 @@ public class SimulationScript : MonoBehaviour
         rawImage.texture = buffers[currentBuffer];
     }
 
+    private Vector2 lastPosition = Vector2.negativeInfinity;
+
     private void Draw()
     {
-        if (!Input.GetMouseButton(0)) return;
+        if (!Input.GetMouseButton(0)) {
+            lastPosition = Vector2.negativeInfinity;
+            return;
+        }
 
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(thisTransform, Input.mousePosition, null, out var localPoint))
         {
@@ -137,8 +142,16 @@ public class SimulationScript : MonoBehaviour
                 Mathf.InverseLerp(thisTransform.rect.yMin, thisTransform.rect.yMax, localPoint.y)
             );
 
-            computeShader.SetInt("pointToDrawX", Mathf.FloorToInt(uv.x * resolution));
-            computeShader.SetInt("pointToDrawY", Mathf.FloorToInt(uv.y * resolution));
+            Vector2 position = new(Mathf.FloorToInt(uv.x * resolution), Mathf.FloorToInt(uv.y * resolution));
+            
+            if (lastPosition != Vector2.negativeInfinity)
+                computeShader.SetVector("lastDrawPosition", new(lastPosition.x, lastPosition.y, 0, 0));
+            else
+                computeShader.SetVector("lastDrawPosition", new(position.x, position.y, 0, 0));
+            
+            computeShader.SetVector("newDrawPosition", new(position.x, position.y, 0, 0));
+
+            lastPosition = position;
 
             computeShader.SetTexture(drawingKernel, "Result", buffers[currentBuffer]);
             computeShader.Dispatch(drawingKernel, resolution / 8, resolution / 8, 1);
