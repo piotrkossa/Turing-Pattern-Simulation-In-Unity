@@ -50,16 +50,20 @@ void Draw(uint3 id : SV_DispatchThreadID)
 {
     float lineWidth = 3.0;
 
-    float2 p = id.xy;
+    float2 p  = id.xy;
+    float2 a  = lastDrawPosition;
+    float2 b  = newDrawPosition;
 
-    float a = lastDrawPosition.y - newDrawPosition.y;
-    float b = newDrawPosition.x - lastDrawPosition.x;
-    float c = lastDrawPosition.x * newDrawPosition.y 
-            - newDrawPosition.x * lastDrawPosition.y;
+    float2 ab = b - a;
+    float2 ap = p - a;
 
-    float d = abs(a * id.x + b * id.y + c)/(sqrt(a*a + b*b));
+    float t = saturate(dot(ap, ab) / dot(ab, ab));
+    float2 closest = a + ab * t;
 
-    if (d <= lineWidth) {
+    float dist = length(p - closest);
+
+    if (dist < lineWidth)
+    {
         Result[id.xy] = float4(0.0, 1.0, 0.0, 1.0);
     }
 }
