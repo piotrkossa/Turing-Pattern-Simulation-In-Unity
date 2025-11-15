@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +14,7 @@ public class SimulationScript : MonoBehaviour
 
     private RawImage rawImage;
 
-    private const int resolution = 512;
+    private int Resolution => int.Parse(resolutionDropdown.options[resolutionDropdown.value].text);
 
     [Header("Setup")]
     [SerializeField] private Slider _feedRateSlider;
@@ -22,25 +23,34 @@ public class SimulationScript : MonoBehaviour
     [SerializeField] private Slider _diffusionBSlider;
     [SerializeField] private Slider _speedSlider;
 
+    [SerializeField] private TMP_Dropdown resolutionDropdown;
+
     private float FeedRate => _feedRateSlider.SliderValue;
     private float KillRate => _killRateSlider.SliderValue;
     private float DiffusionA => _diffusionASlider.SliderValue;
     private float DiffusionB => _diffusionBSlider.SliderValue;
     private int IterationsPerFrame => (int)_speedSlider.SliderValue;
 
+
+    private bool stopOnWalls = false;
     private bool drawingMode = false;
 
+    private int GenerateSeedSize(int res)
+    {
+        return Mathf.RoundToInt(2f * Mathf.Pow(res / 64f, 0.81f));
+    }
 
     public void Reset()
     {
         SimulationShader.Clear();
-        SimulationShader.AddSeed();
+        SimulationShader.AddSeed(GenerateSeedSize(Resolution));
 
         rawImage.texture = SimulationShader.GetCurrentTexture();
     }
 
     public void StopOnWalls(bool value)
     {
+        stopOnWalls = value;
         SimulationShader.Settings.StopOnWalls = value;
     }
 
@@ -58,22 +68,28 @@ public class SimulationScript : MonoBehaviour
         SimulationShader.Settings.IterationsPerFrame = IterationsPerFrame;
     }
 
-    private void Start()
+    private void InitShader()
     {
-        thisTransform = this.GetComponent<RectTransform>();
-
-        SimulationShader.Initialize(resolution, new SimulationSettings(
+        SimulationShader.Initialize(Resolution, new SimulationSettings(
             feedRate: FeedRate,
             killRate: KillRate,
             iterationsPerFrame: IterationsPerFrame,
             diffusionU: DiffusionA,
             diffusionV: DiffusionB,
-            stopOnWalls: false
+            stopOnWalls: stopOnWalls
         ));
 
+        Reset();
+    }
+
+    private void Start()
+    {
+        thisTransform = this.GetComponent<RectTransform>();
         rawImage = this.GetComponent<RawImage>();
 
-        Reset();
+        resolutionDropdown.onValueChanged.AddListener(delegate { InitShader(); });
+
+        InitShader();
     }
 
 
@@ -108,7 +124,7 @@ public class SimulationScript : MonoBehaviour
                 Mathf.InverseLerp(thisTransform.rect.yMin, thisTransform.rect.yMax, localPoint.y)
             );
 
-            Vector2 position = new(Mathf.FloorToInt(uv.x * resolution), Mathf.FloorToInt(uv.y * resolution));
+            Vector2 position = new(Mathf.FloorToInt(uv.x * Resolution), Mathf.FloorToInt(uv.y * Resolution));
             
             if (lastPosition != Vector2.negativeInfinity)
                 SimulationShader.Draw(lastPosition, position);

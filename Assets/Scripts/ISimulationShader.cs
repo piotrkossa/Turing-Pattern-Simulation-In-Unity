@@ -4,7 +4,7 @@ public interface ISimulationShader
 {
     void Initialize(int resolution, SimulationSettings settings);
     void Clear();
-    void AddSeed();
+    void AddSeed(int size);
     void SimulateFrame();
 
     void Draw(Vector2 lastCursorPos, Vector2 cursorPos);

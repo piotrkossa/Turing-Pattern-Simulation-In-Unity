@@ -28,6 +28,7 @@ bool stopOnWalls;
 float2 lastDrawPosition;
 float2 newDrawPosition;
 
+uint seedSize;
 //
 
 void DrawSquare(uint2 p, uint diameter, uint2 id)
@@ -73,7 +74,6 @@ void Draw(uint3 id : SV_DispatchThreadID)
 void AddSeed (uint3 id : SV_DispatchThreadID)
 {
     uint2 center = uint2(resolution/2, resolution/2);
-    uint seedSize = 10;
 
     DrawSquare(center, seedSize, id.xy);
 }

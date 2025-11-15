@@ -57,8 +57,10 @@ public class ComputeShaderSimulation : MonoBehaviour, ISimulationShader
         computeShader.Dispatch(initKernel, resolution / 8, resolution / 8, 1);
     }
 
-    public void AddSeed()
+    public void AddSeed(int size)
     {
+        computeShader.SetInt("seedSize", size);
+        
         computeShader.SetTexture(seedKernel, "Result", buffers[currentBuffer]);
         computeShader.Dispatch(seedKernel, resolution / 8, resolution / 8, 1);
     }
