@@ -5,54 +5,43 @@ public class SimulationScript : MonoBehaviour
 {
     private RectTransform thisTransform;
 
-    [Header("Setup")]
-    public ComputeShader computeShader;
+    [Header("Shader")]
+    [SerializeField] private MonoBehaviour simulationShaderObject;
+    
+    private ISimulationShader SimulationShader => (ISimulationShader)simulationShaderObject;
+    
 
-    public RawImage rawImage;
-
-    public RenderTexture[] buffers;
-    private int currentBuffer = 0;
-
-    private int mainKernel;
-    private int initKernel;
-    private int seedKernel;
-    private int drawingKernel;
+    private RawImage rawImage;
 
     private const int resolution = 512;
 
-    // variables to update each frame
-    private float feedRate;
-    private float killRate;
-    private float diffusionA = 1.0f;
-    private float diffusionB = 0.5f;
-    private int iterationsPerFrame = 0;
-    private bool stopOnWalls = false;
-    private bool drawingMode = false;
-
-
+    [Header("Setup")]
     [SerializeField] private Slider _feedRateSlider;
     [SerializeField] private Slider _killRateSlider;
     [SerializeField] private Slider _diffusionASlider;
     [SerializeField] private Slider _diffusionBSlider;
     [SerializeField] private Slider _speedSlider;
 
+    private float FeedRate => _feedRateSlider.SliderValue;
+    private float KillRate => _killRateSlider.SliderValue;
+    private float DiffusionA => _diffusionASlider.SliderValue;
+    private float DiffusionB => _diffusionBSlider.SliderValue;
+    private int IterationsPerFrame => (int)_speedSlider.SliderValue;
+
+    private bool drawingMode = false;
+
 
     public void Reset()
     {
-        computeShader.SetTexture(initKernel, "Result", buffers[0]);
-        computeShader.Dispatch(initKernel, resolution / 8, resolution / 8, 1);
-        
-        computeShader.SetTexture(seedKernel, "Result", buffers[0]);
-        computeShader.Dispatch(seedKernel, resolution / 8, resolution / 8, 1);
+        SimulationShader.Clear();
+        SimulationShader.AddSeed();
 
-        currentBuffer = 0;
-
-        rawImage.texture = buffers[currentBuffer];
+        rawImage.texture = SimulationShader.GetCurrentTexture();
     }
 
     public void StopOnWalls(bool value)
     {
-        stopOnWalls = value;
+        SimulationShader.Settings.StopOnWalls = value;
     }
 
     public void SetDrawingMode(bool value)
@@ -60,36 +49,29 @@ public class SimulationScript : MonoBehaviour
         drawingMode = value;
     }
 
-
-    private float timeStep = 1.0f; // private for now
-
     private void UpdateSettings()
     {
-        feedRate = _feedRateSlider.SliderValue;
-        killRate = _killRateSlider.SliderValue;
-        diffusionA = _diffusionASlider.SliderValue;
-        diffusionB = _diffusionBSlider.SliderValue;
-        iterationsPerFrame = (int)_speedSlider.SliderValue;
+        SimulationShader.Settings.FeedRate = FeedRate;
+        SimulationShader.Settings.KillRate = KillRate;
+        SimulationShader.Settings.DiffusionU = DiffusionA;
+        SimulationShader.Settings.DiffusionV = DiffusionB;
+        SimulationShader.Settings.IterationsPerFrame = IterationsPerFrame;
     }
 
     private void Start()
     {
         thisTransform = this.GetComponent<RectTransform>();
 
-        buffers = new RenderTexture[2];
-        for (int i = 0; i < 2; i++)
-        {
-            buffers[i] = new RenderTexture(resolution, resolution, 0, RenderTextureFormat.RGFloat);
-            buffers[i].enableRandomWrite = true;
-            buffers[i].Create();
-        }
+        SimulationShader.Initialize(resolution, new SimulationSettings(
+            feedRate: FeedRate,
+            killRate: KillRate,
+            iterationsPerFrame: IterationsPerFrame,
+            diffusionU: DiffusionA,
+            diffusionV: DiffusionB,
+            stopOnWalls: false
+        ));
 
-        mainKernel = computeShader.FindKernel("CSMain");
-        initKernel = computeShader.FindKernel("Initialize");
-        seedKernel = computeShader.FindKernel("AddSeed");
-        drawingKernel = computeShader.FindKernel("Draw");
-        
-        computeShader.SetInt("resolution", resolution);
+        rawImage = this.GetComponent<RawImage>();
 
         Reset();
     }
@@ -99,29 +81,13 @@ public class SimulationScript : MonoBehaviour
     {
         UpdateSettings();
 
-        computeShader.SetFloat("feedRate", feedRate);
-        computeShader.SetFloat("killRate", killRate);
-        computeShader.SetFloat("diffusionU", diffusionA);
-        computeShader.SetFloat("diffusionV", diffusionB);
-        computeShader.SetFloat("deltaTime", timeStep);
-        computeShader.SetBool("stopOnWalls", stopOnWalls);
-
-
         if (drawingMode)
             Draw();
 
-        for (int i = 0; i < iterationsPerFrame; i++)
-        {
-            computeShader.SetTexture(mainKernel, "prevState", buffers[currentBuffer]);
-            computeShader.SetTexture(mainKernel, "Result", buffers[1 - currentBuffer]);
-
-            computeShader.Dispatch(mainKernel, resolution / 8, resolution / 8, 1);
-
-            currentBuffer = 1 - currentBuffer;
-        }
+        SimulationShader.SimulateFrame();
 
         
-        rawImage.texture = buffers[currentBuffer];
+        rawImage.texture = SimulationShader.GetCurrentTexture();
     }
 
     private Vector2 lastPosition = Vector2.negativeInfinity;
@@ -145,27 +111,11 @@ public class SimulationScript : MonoBehaviour
             Vector2 position = new(Mathf.FloorToInt(uv.x * resolution), Mathf.FloorToInt(uv.y * resolution));
             
             if (lastPosition != Vector2.negativeInfinity)
-                computeShader.SetVector("lastDrawPosition", new(lastPosition.x, lastPosition.y, 0, 0));
+                SimulationShader.Draw(lastPosition, position);
             else
-                computeShader.SetVector("lastDrawPosition", new(position.x, position.y, 0, 0));
-            
-            computeShader.SetVector("newDrawPosition", new(position.x, position.y, 0, 0));
+                SimulationShader.Draw(position, position);
 
             lastPosition = position;
-
-            computeShader.SetTexture(drawingKernel, "Result", buffers[currentBuffer]);
-            computeShader.Dispatch(drawingKernel, resolution / 8, resolution / 8, 1);
-        }
-    }
-
-    private void OnDestroy()
-    {
-        for (int i = 0; i < 2; i++)
-        {
-            if (buffers != null && buffers[i] != null)
-            {
-                buffers[i].Release();
-            }
         }
     }
 }
