@@ -359,16 +359,10 @@ MonoBehaviour:
   m_Placeholder: {fileID: 956683485}
   m_ItemText: {fileID: 817573284}
   m_ItemImage: {fileID: 0}
-  m_Value: 4
+  m_Value: 2
   m_MultiSelect: 0
   m_Options:
     m_Options:
-    - m_Text: 32
-      m_Image: {fileID: 0}
-      m_Color: {r: 0, g: 0, b: 0, a: 0}
-    - m_Text: 64
-      m_Image: {fileID: 0}
-      m_Color: {r: 0, g: 0, b: 0, a: 0}
     - m_Text: 128
       m_Image: {fileID: 0}
       m_Color: {r: 0, g: 0, b: 0, a: 0}
@@ -5638,7 +5632,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2022755768}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cf307f3508a09074884bb19027244ffc, type: 3}
   m_Name: 
@@ -5654,7 +5648,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2022755768}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 96fbe821a3683224c8129e5fc4af09e4, type: 3}
   m_Name: 

@@ -37,7 +37,7 @@ public class SimulationScript : MonoBehaviour
 
     private int GenerateSeedSize(int res)
     {
-        return Mathf.RoundToInt(2f * Mathf.Pow(res / 64f, 0.81f));
+        return Mathf.RoundToInt(2f * Mathf.Pow(res / 64f, 0.81f)) + 5;
     }
 
     public void Reset()

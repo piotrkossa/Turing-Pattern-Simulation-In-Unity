@@ -63,6 +63,7 @@ public class FragmentShaderSimulation : MonoBehaviour, ISimulationShader
     public void AddSeed(int size)
     {
         seedMaterial.SetInt("_SeedSize", size);
+        seedMaterial.SetInt("_Resolution", resolution);
 
         Graphics.Blit(buffers[currentBuffer], buffers[1 - currentBuffer], seedMaterial);
         currentBuffer = 1 - currentBuffer;

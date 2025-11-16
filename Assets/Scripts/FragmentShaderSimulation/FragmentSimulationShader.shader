@@ -1,4 +1,4 @@
-Shader "TuringSimulation/VisualisationShader"
+Shader "TuringSimulation/FragmentSimulationShader"
 {
     Properties
     {
