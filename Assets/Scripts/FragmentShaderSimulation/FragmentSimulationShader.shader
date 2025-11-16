@@ -9,7 +9,7 @@ Shader "TuringSimulation/VisualisationShader"
         _FeedRate ("Feed Rate", Float) = 0.035
         _KillRate ("Kill Rate", Float) = 0.065
         _DeltaTime ("Delta Time", Float) = 1.0
-        _StopOnWalls ("Stop On Walls", int) = 0
+        _StopOnWalls ("Stop On Walls", Integer) = 0
     }
     SubShader
     {
@@ -62,16 +62,13 @@ Shader "TuringSimulation/VisualisationShader"
             {
                 float2 neighbourUV = uv + offset;
 
-                if (_StopOnWalls == 1)
-                {
-                    neighbourUV = saturate(neighbourUV);
-                }
-                else
-                {
-                    neighbourUV = frac(neighbourUV);
-                }
-
-                return tex2D(_MainTex, neighbourUV);
+                //if (_StopOnWalls == 1)
+                //{
+                    return tex2D(_MainTex, saturate(neighbourUV));
+                //}
+               // else {
+                 //   return tex2D(_MainTex, neighbourUV);
+                //}
             }
 
             fixed4 fragmentFunction (v2f i) : SV_Target

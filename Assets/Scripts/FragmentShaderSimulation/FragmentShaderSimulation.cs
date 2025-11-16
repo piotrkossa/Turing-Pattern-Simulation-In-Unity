@@ -43,7 +43,8 @@ public class FragmentShaderSimulation : MonoBehaviour, ISimulationShader
 
         for (int i = 0; i < 2; i++) {
             buffers[i] = new RenderTexture(resolution, resolution, 0, RenderTextureFormat.ARGBFloat);
-            buffers[i].enableRandomWrite = true;
+            buffers[i].wrapMode = TextureWrapMode.Clamp;
+            buffers[i].filterMode = FilterMode.Point;
             buffers[i].Create();
         }
 
@@ -75,6 +76,7 @@ public class FragmentShaderSimulation : MonoBehaviour, ISimulationShader
         computeMaterial.SetFloat("_DiffusionV", Settings.DiffusionV);
         computeMaterial.SetFloat("_DeltaTime", Settings.TimeStep);
         computeMaterial.SetInt("_StopOnWalls", Settings.StopOnWalls ? 1 : 0);
+
 
         for (int i = 0; i < Settings.IterationsPerFrame; i++)
         {
