@@ -53,9 +53,9 @@ Shader "TuringSimulation/VisualisationShader"
                 int2 pixelPos = int2(i.uv * _Resolution);
 
                 int2 diff = pixelPos - center;
-                float dist = length(float2(diff));
 
-                if (dist < _SeedSize)
+
+                if (abs(diff.x) < _SeedSize / 2 && abs(diff.y) < _SeedSize / 2)
                 {
                     return fixed4(0.0, 1.0, 0.0, 1.0);
                 }
