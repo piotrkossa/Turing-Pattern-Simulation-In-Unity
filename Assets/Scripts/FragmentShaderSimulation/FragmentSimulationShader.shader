@@ -9,6 +9,7 @@ Shader "TuringSimulation/VisualisationShader"
         _FeedRate ("Feed Rate", Float) = 0.035
         _KillRate ("Kill Rate", Float) = 0.065
         _DeltaTime ("Delta Time", Float) = 1.0
+        _StopOnWalls ("Stop On Walls", int) = 0
     }
     SubShader
     {
@@ -32,6 +33,7 @@ Shader "TuringSimulation/VisualisationShader"
             float _FeedRate;
             float _KillRate;
             float _DeltaTime;
+            int _StopOnWalls;
 
             struct appdata
             {
@@ -56,6 +58,22 @@ Shader "TuringSimulation/VisualisationShader"
                 return OUT;
             }
 
+            float4 GetNeighbour(float2 uv, float2 offset)
+            {
+                float2 neighbourUV = uv + offset;
+
+                if (_StopOnWalls == 1)
+                {
+                    neighbourUV = saturate(neighbourUV);
+                }
+                else
+                {
+                    neighbourUV = frac(neighbourUV);
+                }
+
+                return tex2D(_MainTex, neighbourUV);
+            }
+
             fixed4 fragmentFunction (v2f i) : SV_Target
             {
                 float u = tex2D(_MainTex, i.uv).r;
@@ -64,26 +82,35 @@ Shader "TuringSimulation/VisualisationShader"
                 float2 offsetX = float2(1.0/_Resolution, 0);
                 float2 offsetY = float2(0, 1.0/_Resolution);
 
+                float4 N = GetNeighbour(i.uv, offsetY);
+                float4 S = GetNeighbour(i.uv, -offsetY);
+                float4 E = GetNeighbour(i.uv, offsetX);
+                float4 W = GetNeighbour(i.uv, -offsetX);
+                float4 NE = GetNeighbour(i.uv, offsetX + offsetY);
+                float4 NW = GetNeighbour(i.uv, -offsetX + offsetY);
+                float4 SE = GetNeighbour(i.uv, offsetX - offsetY);
+                float4 SW = GetNeighbour(i.uv, -offsetX - offsetY);
+
                 float laplacianU = 
-                    tex2D(_MainTex, i.uv + offsetY).r               * 0.2
-                    + tex2D(_MainTex, i.uv - offsetY).r             * 0.2
-                    + tex2D(_MainTex, i.uv + offsetX).r             * 0.2
-                    + tex2D(_MainTex, i.uv - offsetX).r             * 0.2
-                    + tex2D(_MainTex, i.uv + offsetX + offsetY).r   * 0.05
-                    + tex2D(_MainTex, i.uv + offsetX - offsetY).r   * 0.05
-                    + tex2D(_MainTex, i.uv - offsetX + offsetY).r   * 0.05
-                    + tex2D(_MainTex, i.uv - offsetX - offsetY).r   * 0.05
+                    N.r      * 0.2
+                    + S.r    * 0.2
+                    + E.r    * 0.2
+                    + W.r    * 0.2
+                    + NE.r   * 0.05
+                    + NW.r   * 0.05
+                    + SE.r   * 0.05
+                    + SW.r   * 0.05
                     - u;
 
                 float laplacianV = 
-                    tex2D(_MainTex, i.uv + offsetY).g               * 0.2
-                    + tex2D(_MainTex, i.uv - offsetY).g             * 0.2
-                    + tex2D(_MainTex, i.uv + offsetX).g             * 0.2
-                    + tex2D(_MainTex, i.uv - offsetX).g             * 0.2
-                    + tex2D(_MainTex, i.uv + offsetX + offsetY).g   * 0.05
-                    + tex2D(_MainTex, i.uv + offsetX - offsetY).g   * 0.05
-                    + tex2D(_MainTex, i.uv - offsetX + offsetY).g   * 0.05
-                    + tex2D(_MainTex, i.uv - offsetX - offsetY).g   * 0.05
+                    N.g      * 0.2
+                    + S.g    * 0.2
+                    + E.g    * 0.2
+                    + W.g    * 0.2
+                    + NE.g   * 0.05
+                    + NW.g   * 0.05
+                    + SE.g   * 0.05
+                    + SW.g   * 0.05
                     - v;
 
                 float reaction = u * (v * v);
