@@ -2345,7 +2345,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0408852167444a4a868319b43b5d074, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  simulationShaderObject: {fileID: 2022755770}
+  simulationShaderObject: {fileID: 0}
   _feedRateSlider: {fileID: 1214947634}
   _killRateSlider: {fileID: 694474635}
   _diffusionASlider: {fileID: 1685538129}
@@ -5639,10 +5639,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 2022755768}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96fbe821a3683224c8129e5fc4af09e4, type: 3}
+  m_Script: {fileID: 11500000, guid: cf307f3508a09074884bb19027244ffc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  computeShader: {fileID: 7200000, guid: f46086a9dcd890f4a9f20bf77f83d6fb, type: 3}
+  computeShader: {fileID: 4800000, guid: e0f149162145aae4f9826b07fac0b038, type: 3}
+  seedShader: {fileID: 0}
+  initShader: {fileID: 0}
+  drawingShader: {fileID: 0}
 --- !u!1 &2056321514
 GameObject:
   m_ObjectHideFlags: 0
