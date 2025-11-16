@@ -134,8 +134,5 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float newU = clamp(prevU + deltaU * deltaTime, 0.0, 1.0);
     float newV = clamp(prevV + deltaV * deltaTime, 0.0, 1.0);
 
-    newU = clamp(newU, 0.0, 1.0);
-    newV = clamp(newV, 0.0, 1.0);
-
     Result[id.xy] = float4(newU, newV, 0.0, 1.0);
 }
