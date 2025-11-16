@@ -87,6 +87,7 @@ public class FragmentShaderSimulation : MonoBehaviour, ISimulationShader
 
     public void Draw(Vector2 lastCursorPos, Vector2 cursorPos)
     {
+        drawingMaterial.SetFloat("_Resolution", resolution);
         drawingMaterial.SetVector("_LastDrawPosition", new Vector4(lastCursorPos.x, lastCursorPos.y, 0, 0));
         drawingMaterial.SetVector("_NewDrawPosition", new Vector4(cursorPos.x, cursorPos.y, 0, 0));
 
