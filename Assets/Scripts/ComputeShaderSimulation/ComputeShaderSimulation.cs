@@ -41,6 +41,7 @@ public class ComputeShaderSimulation : MonoBehaviour, ISimulationShader
         for (int i = 0; i < 2; i++) {
             buffers[i] = new RenderTexture(resolution, resolution, 0, RenderTextureFormat.ARGBFloat);
             buffers[i].enableRandomWrite = true;
+            buffers[i].filterMode = FilterMode.Trilinear;
             buffers[i].Create();
         }
 

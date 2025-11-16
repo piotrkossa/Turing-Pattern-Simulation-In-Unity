@@ -82,7 +82,7 @@ public class SimulationScript : MonoBehaviour
         Reset();
     }
 
-    private void Start()
+    public void Start()
     {
         thisTransform = this.GetComponent<RectTransform>();
         rawImage = this.GetComponent<RawImage>();
