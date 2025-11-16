@@ -62,7 +62,7 @@ Shader "TuringSimulation/VisualisationShader"
                 float v = tex2D(_MainTex, i.uv).g;
 
                 float2 offsetX = float2(1.0/_Resolution, 0);
-                float2 offsetY = float2(0, 1.0/_Resolution0);
+                float2 offsetY = float2(0, 1.0/_Resolution);
 
                 float laplacianU = 
                     tex2D(_MainTex, i.uv + offsetY).r               * 0.2
@@ -75,7 +75,7 @@ Shader "TuringSimulation/VisualisationShader"
                     + tex2D(_MainTex, i.uv - offsetX - offsetY).r   * 0.05
                     - u;
 
-                float laplacianU = 
+                float laplacianV = 
                     tex2D(_MainTex, i.uv + offsetY).g               * 0.2
                     + tex2D(_MainTex, i.uv - offsetY).g             * 0.2
                     + tex2D(_MainTex, i.uv + offsetX).g             * 0.2
