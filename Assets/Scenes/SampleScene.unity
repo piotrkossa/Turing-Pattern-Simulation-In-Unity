@@ -5608,6 +5608,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2022755769}
   - component: {fileID: 2022755770}
+  - component: {fileID: 2022755771}
   m_Layer: 0
   m_Name: SimulationShader
   m_TagString: Untagged
@@ -5637,7 +5638,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2022755768}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cf307f3508a09074884bb19027244ffc, type: 3}
   m_Name: 
@@ -5646,6 +5647,19 @@ MonoBehaviour:
   seedShader: {fileID: 4800000, guid: bfb6e30ae24528a4d9d89cf49e8b94cf, type: 3}
   initShader: {fileID: 4800000, guid: 24fb8d0a6fd9aeb448f0adfc4e6c20bb, type: 3}
   drawingShader: {fileID: 0}
+--- !u!114 &2022755771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2022755768}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96fbe821a3683224c8129e5fc4af09e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  computeShader: {fileID: 7200000, guid: f46086a9dcd890f4a9f20bf77f83d6fb, type: 3}
 --- !u!1 &2056321514
 GameObject:
   m_ObjectHideFlags: 0

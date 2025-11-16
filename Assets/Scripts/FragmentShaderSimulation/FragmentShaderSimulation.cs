@@ -43,7 +43,8 @@ public class FragmentShaderSimulation : MonoBehaviour, ISimulationShader
 
         for (int i = 0; i < 2; i++) {
             buffers[i] = new RenderTexture(resolution, resolution, 0, RenderTextureFormat.ARGBFloat);
-            buffers[i].enableRandomWrite = true;
+            buffers[i].wrapMode = TextureWrapMode.Repeat;
+            buffers[i].filterMode = FilterMode.Point;
             buffers[i].Create();
         }
 

@@ -64,14 +64,17 @@ Shader "TuringSimulation/VisualisationShader"
 
                 if (_StopOnWalls == 1)
                 {
-                    neighbourUV = saturate(neighbourUV);
+                    if (neighbourUV.x < 0.0 || neighbourUV.x > 1.0 || 
+                        neighbourUV.y < 0.0 || neighbourUV.y > 1.0)
+                    {
+                        return float4(1.0, 0.0, 0.0, 1.0);
+                    }
+                    return tex2D(_MainTex, neighbourUV);
                 }
-                else
+                else 
                 {
-                    neighbourUV = frac(neighbourUV);
+                    return tex2D(_MainTex, frac(neighbourUV));
                 }
-
-                return tex2D(_MainTex, neighbourUV);
             }
 
             fixed4 fragmentFunction (v2f i) : SV_Target
